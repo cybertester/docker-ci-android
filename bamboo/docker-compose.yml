@@ -13,7 +13,9 @@ services:
       - "bitbucket:192.168.43.241"
     volumes:
       - /Users/pc-head-216/bambo-home/:/var/atlassian/application-data/bamboo:rw
-      - /usr/bin/docker:/usr/bin/docker:rw
+      - /usr/local/bin/docker:/usr/bin/docker:rw
+      - /usr/local/bin/docker-compose:/usr/bin/docker-compose:rw
+      - /usr/local/bin/docker-machine:/usr/bin/docker-machine:rw
       - /var/run/docker.sock:/var/run/docker.sock:rw
     networks:
       - atlassian
@@ -57,15 +59,16 @@ services:
     networks:
       - atlassian
 
-  appium:
-    container_name: bamboo-appium
-    image: bamboo-appium:latest
-    restart: always
-    ports:
-      - 0.0.0.0:32770:5900
-      - 0.0.0.0:32771:4723
-    networks:
-      - atlassian
+#  appium:
+#    container_name: bamboo-appium
+#    image: appium:1.7.1
+#    build: ./appium/
+#    restart: always
+#    ports:
+#      - 0.0.0.0:32770:5900
+#      - 0.0.0.0:32771:4723
+#    networks:
+#      - atlassian
 
   selenium_hub:
     container_name: bamboo-selenium
@@ -75,23 +78,24 @@ services:
     networks:
       - atlassian
 
-  nexus_7.1.1:
-    container_name: bamboo-emulator
-    image: butomo1989/docker-android-x86-7.1.1
-    privileged: true
-    ports:
-      - 6080
-    volumes:
-      - /Users/pc-head-216/bambo-home/xml-data/build-dir/MBS-DEV-JOB1/build:/root/tmp
-      - ./video-nexus_7.1.1:/tmp/video
-    environment:
-      - DEVICE=Nexus 5
-      - CONNECT_TO_GRID=True
-      - APPIUM=true
-      - SELENIUM_HOST=selenium_hub
-      - AUTO_RECORD=True
-    networks:
-      - atlassian
+#  nexus_7.1.1:
+#    container_name: bamboo-emulator
+#    image: docker-android-x86-7.1.1:latest
+#    build: ./emulator/
+#    privileged: true
+#    ports:
+#      - 6080
+#    volumes:
+#      - $PWD/build:/root/tmp
+#      - ./video-nexus_7.1.1:/tmp/video
+#    environment:
+#      - DEVICE=Nexus 5
+#      - CONNECT_TO_GRID=True
+#      - APPIUM=true
+#      - SELENIUM_HOST=selenium_hub
+#      - AUTO_RECORD=True
+#    networks:
+#      - atlassian
 
 networks:
   atlassian:
