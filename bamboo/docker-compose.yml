@@ -1,0 +1,97 @@
+version: '2'
+services:
+
+  bamboo:
+    container_name: rib-bamboo
+    image: rib-bamboo:latest
+    build: ./data/
+    restart: always
+    privileged: true
+    ports:
+      - 0.0.0.0:8085:8085
+    extra_hosts:
+      - "bitbucket:192.168.43.241"
+    volumes:
+      - /Users/pc-head-216/bambo-home/:/var/atlassian/application-data/bamboo:rw
+      - /usr/bin/docker:/usr/bin/docker:rw
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+    networks:
+      - atlassian
+    depends_on:
+      - percona
+      - redis
+      - selenium
+
+  percona:
+    container_name: bamboo-percona
+    image: percona:5.6
+    restart: always
+    privileged: true
+    #entrypoint: /be-entrypoint.sh
+    #command: /docker-entrypoint.sh mysqld
+    networks:
+      - atlassian
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_DATABASE: bamboo
+    volumes:
+    #  - ./data/be-entrypoint.sh:/be-entrypoint.sh:ro
+      - /usr/local/var/mysql:/var/lib/mysql:rw
+
+
+  redis:
+    container_name: bamboo-redis
+    image: redis:3
+    restart: always
+    environment:
+      TZ: Asia/Bishkek
+    networks:
+      - atlassian
+
+  selenium:
+    container_name: bamboo-chrome
+    image: selenium/node-chrome
+    restart: always
+    ports:
+      - 0.0.0.0:32768:5900
+    networks:
+      - atlassian
+
+  appium:
+    container_name: bamboo-appium
+    image: bamboo-appium:latest
+    restart: always
+    ports:
+      - 0.0.0.0:32770:5900
+      - 0.0.0.0:32771:4723
+    networks:
+      - atlassian
+
+  selenium_hub:
+    container_name: bamboo-selenium
+    image: selenium/hub:3.4.0
+    ports:
+      - 0.0.0.0:32769:4444
+    networks:
+      - atlassian
+
+  nexus_7.1.1:
+    container_name: bamboo-emulator
+    image: butomo1989/docker-android-x86-7.1.1
+    privileged: true
+    ports:
+      - 6080
+    volumes:
+      - /Users/pc-head-216/bambo-home/xml-data/build-dir/MBS-DEV-JOB1/build:/root/tmp
+      - ./video-nexus_7.1.1:/tmp/video
+    environment:
+      - DEVICE=Nexus 5
+      - CONNECT_TO_GRID=True
+      - APPIUM=true
+      - SELENIUM_HOST=selenium_hub
+      - AUTO_RECORD=True
+    networks:
+      - atlassian
+
+networks:
+  atlassian:
