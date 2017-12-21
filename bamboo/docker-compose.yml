@@ -16,7 +16,7 @@ services:
       - /usr/local/bin/docker:/usr/bin/docker:rw
       - /usr/local/bin/docker-compose:/usr/bin/docker-compose:rw
       - /usr/local/bin/docker-machine:/usr/bin/docker-machine:rw
-      - /var/run/docker.sock:/var/run/docker.sock:rw
+      - /private/var/run/docker.sock:/var/run/docker.sock:rw
     networks:
       - atlassian
     depends_on:
@@ -40,7 +40,6 @@ services:
     #  - ./data/be-entrypoint.sh:/be-entrypoint.sh:ro
       - /usr/local/var/mysql:/var/lib/mysql:rw
 
-
   redis:
     container_name: bamboo-redis
     image: redis:3
@@ -59,17 +58,6 @@ services:
     networks:
       - atlassian
 
-#  appium:
-#    container_name: bamboo-appium
-#    image: appium:1.7.1
-#    build: ./appium/
-#    restart: always
-#    ports:
-#      - 0.0.0.0:32770:5900
-#      - 0.0.0.0:32771:4723
-#    networks:
-#      - atlassian
-
   selenium_hub:
     container_name: bamboo-selenium
     image: selenium/hub:3.4.0
@@ -84,7 +72,7 @@ services:
 #    build: ./emulator/
 #    privileged: true
 #    ports:
-#      - 6080
+#      - 5900
 #    volumes:
 #      - $PWD/build:/root/tmp
 #      - ./video-nexus_7.1.1:/tmp/video

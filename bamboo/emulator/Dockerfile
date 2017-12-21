@@ -13,24 +13,7 @@ RUN apt-get -qqy update && apt-get -qqy install --no-install-recommends \
     net-tools \
     ffmpeg \
     jq \
-    qemu-kvm \
-    libvirt-bin \
-    ubuntu-vm-builder \
-    bridge-utils \
-    nano \
  && rm -rf /var/lib/apt/lists/*
-
-ENV NOVNC_SHA="b403cb92fb8de82d04f305b4f14fa978003890d7" \
-    WEBSOCKIFY_SHA="558a6439f14b0d85a31145541745e25c255d576b"
-RUN  wget -nv -O noVNC.zip "https://github.com/kanaka/noVNC/archive/${NOVNC_SHA}.zip" \
- && unzip -x noVNC.zip \
- && rm noVNC.zip  \
- && mv noVNC-${NOVNC_SHA} noVNC \
- && wget -nv -O websockify.zip "https://github.com/kanaka/websockify/archive/${WEBSOCKIFY_SHA}.zip" \
- && unzip -x websockify.zip \
- && mv websockify-${WEBSOCKIFY_SHA} ./noVNC/utils/websockify \
- && rm websockify.zip \
- && ln noVNC/vnc_auto.html noVNC/index.html
 
 ARG ANDROID_VERSION=7.1.1
 ARG API_LEVEL=25
@@ -74,14 +57,14 @@ ENV DISPLAY=:0 \
 #---------------
 # 4723
 #   appium port
-# 6080
-#   noVNC port
 # 5554
 #   Emulator port
 # 5555
 #   ADB connection port
+# 5900
+#   VNC connection port
 #===============
-EXPOSE 4723 6080 5554 5555
+EXPOSE 4723 5554 5555 5900
 
 #======================
 # Add Emulator Devices
@@ -91,8 +74,9 @@ COPY devices /root/devices
 #===================
 # Run docker-appium
 #===================
+COPY src /root/src
 COPY supervisord.conf /root/
-RUN  chmod +x /root/supervisord.conf
+RUN chmod -R +x /root/src && chmod +x /root/supervisord.conf
 
 HEALTHCHECK --interval=2s --timeout=40s --retries=1 \
     CMD adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done'

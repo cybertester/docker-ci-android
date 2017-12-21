@@ -6,10 +6,10 @@ ENV BAMBOO_INSTALL      /opt/atlassian/bamboo
 ENV BAMBOO_VERSION      6.0.3
 ENV DOWNLOAD_URL        https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-${BAMBOO_VERSION}.tar.gz
 
-ENV RUN_USER            cybertest
-ENV RUN_GROUP           cybertest
+ENV RUN_USER            root
+ENV RUN_GROUP           root
 
-RUN useradd -m ${RUN_USER}
+#RUN useradd -m ${RUN_USER}
 
 RUN apt-get update  && apt-get install -qqy \
     apt-transport-https \
